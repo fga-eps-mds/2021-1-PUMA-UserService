@@ -5,6 +5,7 @@ const routes = express.Router();
 const userController = require('../controller/userController');
 const db = require('../../dbconfig/dbConfig');
 const userRepository = require('../repository/userRepository');
+const projectController = require('../repository/subjectRepository');
 
 routes.post('/register', (req, res) => {
   const { body } = req;

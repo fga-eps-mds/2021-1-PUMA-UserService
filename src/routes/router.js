@@ -3,6 +3,7 @@ const express = require('express');
 
 const router = express.Router();
 const userRoutes = require('./userRouter');
+const subjectRoutes = require('./subjectRouter');
 
 router.get('/', (req, res) => {
   res.json({
@@ -12,4 +13,5 @@ router.get('/', (req, res) => {
 
 module.exports = (app) => {
   app.use('/', [userRoutes]);
+  app.use('/', [subjectRoutes]);
 };
