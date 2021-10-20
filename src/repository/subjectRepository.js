@@ -54,9 +54,9 @@ function getSubject(subjectIdParam) {
             'SELECT DISTINCT s.subjectid,s.name,s.coursesyllabus,i.subareaid, sb.description FROM SUBJECT as s INNER JOIN IDENTIFIES as i ON (s.subjectid = i.subjectid and s.subjectid = $1) INNER JOIN SUBAREA as sb ON (i.subareaid = sb.subareaid)',
             [subjectIdParam],
         ).then((response) => {
-                resolve(response.rows);
+            resolve(response.rows);
         }).catch((response) => {
-                reject(response);
+            reject(response);
         });
     });
 }
