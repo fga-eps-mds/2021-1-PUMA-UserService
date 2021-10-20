@@ -25,9 +25,9 @@ function addSubject(subject) {
 }
 
 function getSubject(subjectIdParam) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         try {
-            const response =  await subjectRepository.getSubject(subjectIdParam);
+            const response = subjectRepository.getSubject(subjectIdParam);
             resolve(response);
         } catch (e) {
             reject(e);
