@@ -36,4 +36,20 @@ function getSubject(subjectIdParam) {
     });
 }
 
-module.exports = { getSubjects, addSubject, getSubject };
+function deleteSubject(subjectId) {
+    return new Promise((resolve, reject) => {
+        try {
+            const response = subjectRepository.deleteSubject(subjectId);
+            resolve(response);
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+module.exports = { 
+    getSubjects,
+    addSubject,
+    getSubject,
+    deleteSubject
+};

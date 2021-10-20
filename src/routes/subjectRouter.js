@@ -27,4 +27,14 @@ routes.get('/disciplina/:subjectId', async (req, res) => {
     });
 });
 
+routes.delete('/disciplina/:subjectId', async (req, res) => {
+    subjectController.deleteSubject(req.params.subjectId).then((response) => {
+        const data = response.data;
+        res.status(200).json({ data });
+    }).catch((response) => {
+        const data = response.data;
+        res.status(400).json({ data });
+    });
+});
+
 module.exports = routes;

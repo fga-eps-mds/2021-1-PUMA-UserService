@@ -61,8 +61,27 @@ function getSubject(subjectIdParam) {
     });
 }
 
+function deleteSubject(subjectId) {
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM IDENTIFIES WHERE subjectid = $1`, [subjectId],
+        ).then((response) =>{
+            resolve(response);
+        }).catch((response) => {
+            reject(response);
+        });
+
+        db.query('DELETE FROM SUBJECT WHERE subjectid = $1 RETURNING *', [subjectId]
+        ).then((response) => {
+            resolve(response);
+        }).catch((response) => {
+            reject(response);
+        });
+    });
+}
+
 module.exports = {
     getSubjects,
     addSubject,
-    getSubject
+    getSubject,
+    deleteSubject
 };
