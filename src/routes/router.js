@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const userRoutes = require('./userRouter');
 const subjectRoutes = require('./subjectRouter');
+const subareaRoutes = require('./subareaRouter')
 
 router.get('/', (req, res) => {
   res.json({
@@ -14,4 +15,6 @@ router.get('/', (req, res) => {
 module.exports = (app) => {
   app.use('/', [userRoutes]);
   app.use('/', [subjectRoutes]);
+  app.use('/', [subareaRoutes]);
+
 };

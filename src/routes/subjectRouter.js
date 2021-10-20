@@ -20,7 +20,6 @@ routes.post('/disciplina/cadastro', async (req, res) => {
 });
 
 routes.get('/disciplina/consulta/:subjectId', async (req, res) => {
-    console.log('cheguei aqui!');
     subjectController.getSubject(req.params.subjectId).then((response) => {
         res.status(200).json({ response });
     }).catch((response) => {

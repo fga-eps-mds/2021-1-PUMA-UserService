@@ -14,7 +14,7 @@ function getSubjects() {
 function addSubject(subject) {
     return new Promise((resolve, reject) => {
         let resp;
-        switch (subject.operacao){
+        switch (subject.operacao) {
             case 'alteracao':
                 resp = db.query(
                     'UPDATE SUBJECT SET name = $1, coursesyllabus = $2 WHERE subjectid = $3 RETURNING *',
@@ -28,8 +28,20 @@ function addSubject(subject) {
                 )
                 break;
         }
-        resp.then((response) => {
-            resolve(response.rows);
+        resp.then(async (response) => {
+            const subjectId = response.rows[0].subjectid;
+            if (subject.operacao === 'alteracao') {
+                await db.query('DELETE FROM IDENTIFIES WHERE subjectid IN ($1)', [subjectId]);
+            }
+            subject.subareas.forEach((subarea) => {
+                db.query(
+                    'INSERT INTO IDENTIFIES (subareaid,subjectid) VALUES ($1,$2) ', [subarea['subareaid'], subjectId],
+                ).then(() => {
+                    resolve(response.rows);
+                }).catch((response) => {
+                    reject(response);
+                });
+            });
         }).catch((response) => {
             reject(response);
         });
@@ -39,7 +51,7 @@ function addSubject(subject) {
 function getSubject(subjectIdParam) {
     return new Promise((resolve, reject) => {
         db.query(
-            'SELECT * FROM SUBJECT as s WHERE subjectid=$1',
+            'SELECT DISTINCT s.subjectid,s.name,s.coursesyllabus,i.subareaid, sb.description FROM SUBJECT as s INNER JOIN IDENTIFIES as i ON (s.subjectid = i.subjectid and s.subjectid = $1) INNER JOIN SUBAREA as sb ON (i.subareaid = sb.subareaid)',
             [subjectIdParam],
         ).then((response) => {
                 resolve(response.rows);
