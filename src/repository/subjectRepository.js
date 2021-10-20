@@ -1,3 +1,4 @@
+const { response } = require('express');
 const db = require('../../dbconfig/dbConfig');
 
 function getSubjects() {
@@ -13,37 +14,56 @@ function getSubjects() {
 
 function addSubject(subject) {
     return new Promise((resolve, reject) => {
-        let resp;
-        switch (subject.operacao) {
-            case 'alteracao':
-                resp = db.query(
-                    'UPDATE SUBJECT SET name = $1, coursesyllabus = $2 WHERE subjectid = $3 RETURNING *',
-                    [subject.name, subject.coursesyllabus, subject.subjectid]
-                )
-                break;
-            case 'cadastro':
-                resp = db.query(
-                    'INSERT INTO SUBJECT(name,coursesyllabus) VALUES ($1,$2) RETURNING *',
-                    [subject.name, subject.coursesyllabus]
-                )
-                break;
-        }
-        resp.then(async (response) => {
-            const subjectId = response.rows[0].subjectid;
-            if (subject.operacao === 'alteracao') {
-                await db.query('DELETE FROM IDENTIFIES WHERE subjectid IN ($1)', [subjectId]);
-            }
-            subject.subareas.forEach((subarea) => {
-                db.query(
-                    'INSERT INTO IDENTIFIES (subareaid,subjectid) VALUES ($1,$2) ', [subarea['subareaid'], subjectId],
-                ).then(() => {
-                    resolve(response.rows);
-                }).catch((response) => {
-                    reject(response);
-                });
-            });
+        db.query(
+            'INSERT INTO SUBJECT(name,coursesyllabus) VALUES ($1,$2) RETURNING *',
+            [subject.name, subject.coursesyllabus]
+        ).then((response) => {
+            resolve(response.rows[0].subjectid);
+            updateIdentifies(subject, response.rows[0].subjectid)
         }).catch((response) => {
             reject(response);
+        });
+    })
+}
+
+function updateSubject(subject) {
+    return new Promise((resolve, reject) => {
+        db.query(
+            'UPDATE SUBJECT SET name = $1, coursesyllabus = $2 WHERE subjectid = $3 RETURNING *',
+            [subject.name, subject.coursesyllabus, subject.subjectid]
+        ).then((response) => {
+            resolve(response.rows);
+        }).catch((response) =>{
+            reject(response);
+        });
+        deleteIdentifies(subject.subjectid).then((response) => {
+            updateIdentifies(subject, subject.subjectid)
+            resolve(response);
+        }).catch((response) => {
+            reject(response);
+        });
+        // db.query(
+        //     'DELETE FROM IDENTIFIES WHERE subjectid IN ($1)', 
+        //     [subject.subjectid]
+        // ).then((response) =>{
+        //     updateIdentifies(subject, subject.subjectid)
+        //     resolve(response);
+        // }).catch((response) => {
+        //     reject(response);
+        // });;
+    })
+}
+
+function updateIdentifies(subject, subjectid) {
+    return new Promise((resolve, reject) => {
+        subject.subareas.forEach((subarea) => {
+            db.query(
+                'INSERT INTO IDENTIFIES (subareaid,subjectid) VALUES ($1,$2) ', [subarea['subareaid'], subjectid],
+            ).then(() => {
+                resolve(response.rows);
+            }).catch((response) => {
+                reject(response);
+            });
         });
     });
 }
@@ -59,6 +79,19 @@ function getSubject(subjectIdParam) {
             reject(response);
         });
     });
+}
+
+function deleteIdentifies(subjectId) {
+    return new Promise((resolve, reject) => {
+        db.query(
+            'DELETE FROM IDENTIFIES WHERE subjectid IN ($1)', 
+            [subjectId]
+        ).then((response) =>{
+            resolve(response);
+        }).catch((response) => {
+            reject(response);
+        });;
+    })
 }
 
 function deleteSubject(subjectId) {
@@ -81,6 +114,8 @@ function deleteSubject(subjectId) {
 
 module.exports = {
     getSubjects,
+    updateSubject,
+    updateIdentifies,
     addSubject,
     getSubject,
     deleteSubject
