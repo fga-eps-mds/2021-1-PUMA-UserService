@@ -42,9 +42,9 @@ function getSubject(subjectIdParam) {
             'SELECT * FROM SUBJECT as s WHERE subjectid=$1',
             [subjectIdParam],
         ).then((response) => {
-                resolve(response.rows);
+            resolve(response.rows);
         }).catch((response) => {
-                reject(response);
+            reject(response);
         });
     });
 }
