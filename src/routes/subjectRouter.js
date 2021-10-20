@@ -11,4 +11,21 @@ routes.get('/disciplina', async (req, res) => {
     });
 });
 
+routes.post('/disciplina/cadastro', async (req, res) => {
+    subjectController.addSubject(req.body).then((response) => {
+        res.status(200).json({ response });
+    }).catch((response) => {
+        res.status(400).json({ response });
+    });
+});
+
+routes.get('/disciplina/consulta/:subjectId', async (req, res) => {
+    console.log('cheguei aqui!');
+    subjectController.getSubject(req.params.subjectId).then((response) => {
+        res.status(200).json({ response });
+    }).catch((response) => {
+        res.status(400).json({ response });
+    });
+});
+
 module.exports = routes;
