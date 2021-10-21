@@ -24,6 +24,18 @@ function addSubject(subject) {
     });
 }
 
+function updateSubject(subject) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response =  await subjectRepository.updateSubject(subject);
+            resolve(response);
+        } catch (e) {
+            reject(e);
+        }
+        resolve();
+    });
+}
+
 function getSubject(subjectIdParam) {
     return new Promise((resolve, reject) => {
         try {
@@ -51,5 +63,6 @@ module.exports = {
     getSubjects,
     addSubject,
     getSubject,
+    updateSubject,
     deleteSubject
 };

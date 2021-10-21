@@ -42,15 +42,6 @@ function updateSubject(subject) {
         }).catch((response) => {
             reject(response);
         });
-        // db.query(
-        //     'DELETE FROM IDENTIFIES WHERE subjectid IN ($1)', 
-        //     [subject.subjectid]
-        // ).then((response) =>{
-        //     updateIdentifies(subject, subject.subjectid)
-        //     resolve(response);
-        // }).catch((response) => {
-        //     reject(response);
-        // });;
     })
 }
 
@@ -115,7 +106,6 @@ function deleteSubject(subjectId) {
 module.exports = {
     getSubjects,
     updateSubject,
-    updateIdentifies,
     addSubject,
     getSubject,
     deleteSubject
