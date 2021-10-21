@@ -11,8 +11,16 @@ routes.get('/disciplina', async (req, res) => {
     });
 });
 
-routes.post('/disciplina/cadastro', async (req, res) => {
+routes.post('/disciplina', async (req, res) => {
     subjectController.addSubject(req.body).then((response) => {
+        res.status(200).json({ response });
+    }).catch((response) => {
+        res.status(400).json({ response });
+    });
+});
+
+routes.put('/disciplina', async (req, res) => {
+    subjectController.updateSubject(req.body).then((response) => {
         res.status(200).json({ response });
     }).catch((response) => {
         res.status(400).json({ response });
