@@ -9,6 +9,7 @@ const subareaRoutes = require('./subareaRouter')
 router.get('/', (req, res) => {
   res.json({
     Project: 'Puma',
+    Service: 'User-Service',
   });
 });
 
