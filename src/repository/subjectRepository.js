@@ -15,8 +15,8 @@ function getSubjects() {
 function addSubject(subject) {
     return new Promise((resolve, reject) => {
         db.query(
-            'INSERT INTO SUBJECT(name, coursesyllabus, class, semester, academicYear) VALUES ($1,$2,$3,$4,$5) RETURNING *',
-            [subject.name, subject.coursesyllabus, subject.class, subject.semester, subject.academicYear]
+            'INSERT INTO SUBJECT(name, coursesyllabus, class, semester, academicYear, accessPassword) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+            [subject.name, subject.coursesyllabus, subject.class, subject.semester, subject.academicYear, subject.accessPassword]
         ).then((response) => {
             resolve(response.rows[0].subjectid);
             updateIdentifies(subject, response.rows[0].subjectid)
@@ -29,17 +29,12 @@ function addSubject(subject) {
 function updateSubject(subject) {
     return new Promise((resolve, reject) => {
         db.query(
-            'UPDATE SUBJECT SET name = $1, coursesyllabus = $2 WHERE subjectid = $3 RETURNING *',
-            [subject.name, subject.coursesyllabus, subject.subjectid]
+            'UPDATE SUBJECT SET name = $1, coursesyllabus = $2, class = $3, semester = $4, academicYear = $5, accessPassword = $6 WHERE subjectid = $7 RETURNING *',
+            [subject.name, subject.coursesyllabus, subject.class, subject.semester, subject.academicYear, subject.accessPassword, subject.subjectid,]
         ).then((response) => {
+            updateIdentifies(subject, subject.subjectid)
             resolve(response.rows);
         }).catch((response) =>{
-            reject(response);
-        });
-        deleteIdentifies(subject.subjectid).then((response) => {
-            // updateIdentifies(subject, subject.subjectid)
-            resolve(response);
-        }).catch((response) => {
             reject(response);
         });
     })
@@ -47,29 +42,34 @@ function updateSubject(subject) {
 
 function updateIdentifies(subject, subjectid) {
     return new Promise((resolve, reject) => {
-        subject.knowledgearea.forEach((knowledgeArea) => {
-            db.query(
-                'INSERT INTO IDENTIFIES (knowledgeareaid,subjectid) VALUES ($1,$2) ', [knowledgeArea['knowledgeareaid'], subjectid],
-            ).then(() => {
-                resolve(response.rows);
-            }).catch((response) => {
-                reject(response);
+        deleteIdentifies(subjectid).then((response) => {
+            subject.knowledgearea.forEach((knowledgeArea) => {
+                db.query(
+                    'INSERT INTO IDENTIFIES (knowledgeareaid,subjectid) VALUES ($1,$2) ', [knowledgeArea['knowledgeareaid'], subjectid],
+                ).then(() => {
+                    resolve(response.rows);
+                }).catch((response) => {
+                    reject(response);
+                });
             });
-        });
-    });
-}
-
-function getSubject(subjectIdParam) {
-    return new Promise((resolve, reject) => {
-        db.query(
-            'SELECT DISTINCT s.subjectid,s.name,s.coursesyllabus,i.subareaid, sb.description FROM SUBJECT as s INNER JOIN IDENTIFIES as i ON (s.subjectid = i.subjectid and s.subjectid = $1) INNER JOIN SUBAREA as sb ON (i.subareaid = sb.subareaid)',
-            [subjectIdParam],
-        ).then((response) => {
-            resolve(response.rows);
         }).catch((response) => {
             reject(response);
         });
+        
     });
+}
+
+async function getSubjectKnowledgeArea(subjectId) {
+    return (await db.query(
+        `SELECT DISTINCT k.knowledgeareaid, k.knowledgearea FROM KNOWLEDGE_AREA as k 
+        INNER JOIN IDENTIFIES as i ON (k.knowledgeareaid = i.knowledgeareaid)
+        INNER JOIN SUBJECT as s ON (i.subjectid = s.subjectid  and s.subjectid = $1)`,
+        [subjectId],)
+    ).rows;
+}
+
+async function getSubject(subjectIdParam) {
+    return (await db.query(`SELECT * FROM SUBJECT WHERE subjectid = $1`, [subjectIdParam])).rows;
 }
 
 function deleteIdentifies(subjectId) {
@@ -108,5 +108,6 @@ module.exports = {
     updateSubject,
     addSubject,
     getSubject,
-    deleteSubject
+    deleteSubject,
+    getSubjectKnowledgeArea,
 };
