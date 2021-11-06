@@ -4,14 +4,15 @@
   Nmr Tabelas: 13
   Nome do banco de dados: puma
   Criado por: Gabriel Tiveron
-  Última alteração: Criação do script
-    - EMAIL -> UNIQUE
-    - CPF E CNPJ -> CHAR
-    - ADD FK SUBJECT -> PROJECT
+  Última alteração: Alteração na identifies e subject, cria lectures
+    - SUBAREAID -> KNOWLEDGEAREAID (identifies)
+    - CLASS VARCHAR(10) NOT NULL (subject)
+    - SEMESTER SMALLINT NOT NULL (subject)
+    - ACADEMICYEAR SMALLINT NOT NULL (subject)
 */
 
 module.exports = Object.freeze({
-  DBSCHEMALEN: 15,
+  DBSCHEMALEN: 16,
   DBSCHEMA: `
   CREATE TYPE stats AS ENUM ('Em alocacao', 'Aguardando aprovacao', 'Aprovado', 'Recusado');
   CREATE TABLE COMMON_USER (
@@ -51,7 +52,7 @@ module.exports = Object.freeze({
   );
 
   CREATE TABLE PROFESSOR (
-      regNumber SERIAL,
+      regNumber VARCHAR(9),
       userId SERIAL NOT NULL,
 
       CONSTRAINT PROFESSOR_PK PRIMARY KEY (regNumber),
@@ -74,6 +75,10 @@ module.exports = Object.freeze({
       subjectId SERIAL,
       name VARCHAR(100) NOT NULL,
       courseSyllabus VARCHAR(10000),
+      class VARCHAR(10) NOT NULL,
+      semester SMALLINT NOT NULL,
+      academicYear SMALLINT NOT NULL,
+      accessPassword VARCHAR(50),
 
       CONSTRAINT SUBJECT_PK PRIMARY KEY (subjectId)
   );
@@ -114,14 +119,14 @@ module.exports = Object.freeze({
   );
 
   CREATE TABLE has (
-      subAreaId SERIAL NOT NULL,
+      knowledgeAreaId SERIAL NOT NULL,
       projectId SERIAL NOT NULL,
 
-      CONSTRAINT has_SUBAREA_FK FOREIGN KEY (subAreaId)
-        REFERENCES SUBAREA (subAreaId),
+      CONSTRAINT has_KNOWLEDGE_AREA_FK FOREIGN KEY (knowledgeAreaId)
+        REFERENCES KNOWLEDGE_AREA (knowledgeAreaId),
       CONSTRAINT has_PROJECT FOREIGN KEY (projectId)
         REFERENCES PROJECT (projectId),
-      CONSTRAINT has_UK UNIQUE (subAreaId, projectId)
+      CONSTRAINT has_UK UNIQUE (knowledgeAreaId, projectId)
   );
 
   CREATE TABLE FILE (
@@ -135,13 +140,12 @@ module.exports = Object.freeze({
         REFERENCES PROJECT (projectId)
   );
 
-
   CREATE TABLE CLASS (
       classId SERIAL,
       subjectTerm VARCHAR(100) NOT NULL,
       code VARCHAR(3) NOT NULL,
       studentRegNumber VARCHAR(9),
-      professorRegNumber SERIAL,
+      professorRegNumber VARCHAR(9),
       subjectId SERIAL,
 
       CONSTRAINT CLASS_PK PRIMARY KEY(classId),
@@ -151,6 +155,17 @@ module.exports = Object.freeze({
         REFERENCES STUDENT (regNumber),
       CONSTRAINT CLASS_SUBJECT_FK FOREIGN KEY (subjectId)
         REFERENCES SUBJECT (subjectId)
+  );
+
+  CREATE TABLE lectures (
+      professorRegNumber VARCHAR(9) NOT NULL,
+      subjectId SERIAL NOT NULL,
+
+      CONSTRAINT lectures_PROFESSOR_FK FOREIGN KEY (professorRegNumber)
+        REFERENCES PROFESSOR (regNumber),
+      CONSTRAINT lectures_SUBJECT_FK FOREIGN KEY (subjectId)
+        REFERENCES SUBJECT (subjectId),
+      CONSTRAINT lectures_UK UNIQUE (professorRegNumber, subjectId)
   );
 
   CREATE TABLE participates (
@@ -174,14 +189,14 @@ module.exports = Object.freeze({
   );
 
   CREATE TABLE identifies (
-      subAreaId SERIAL,
+      knowledgeAreaId SERIAL,
       subjectId SERIAL,
 
-      CONSTRAINT identifies_SUBAREA_FK FOREIGN KEY (subAreaId)
-        REFERENCES SUBAREA (subAreaId),
+      CONSTRAINT identifies_KNOWLEDGE_AREA_FK FOREIGN KEY (knowledgeAreaId)
+        REFERENCES KNOWLEDGE_AREA (knowledgeAreaId),
       CONSTRAINT identifies_SUBJECT_FK FOREIGN KEY (subjectId)
         REFERENCES SUBJECT (subjectId),
-      CONSTRAINT identifies_UK UNIQUE (subAreaId, subjectId)
+      CONSTRAINT identifies_UK UNIQUE (knowledgeAreaId, subjectId)
   );
 `,
 });
