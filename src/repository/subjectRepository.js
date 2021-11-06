@@ -15,8 +15,8 @@ function getSubjects() {
 function addSubject(subject) {
     return new Promise((resolve, reject) => {
         db.query(
-            'INSERT INTO SUBJECT(name,coursesyllabus) VALUES ($1,$2) RETURNING *',
-            [subject.name, subject.coursesyllabus]
+            'INSERT INTO SUBJECT(name, coursesyllabus, class, semester, academicYear) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+            [subject.name, subject.coursesyllabus, subject.class, subject.semester, subject.academicYear]
         ).then((response) => {
             resolve(response.rows[0].subjectid);
             updateIdentifies(subject, response.rows[0].subjectid)
@@ -37,7 +37,7 @@ function updateSubject(subject) {
             reject(response);
         });
         deleteIdentifies(subject.subjectid).then((response) => {
-            updateIdentifies(subject, subject.subjectid)
+            // updateIdentifies(subject, subject.subjectid)
             resolve(response);
         }).catch((response) => {
             reject(response);
@@ -47,9 +47,9 @@ function updateSubject(subject) {
 
 function updateIdentifies(subject, subjectid) {
     return new Promise((resolve, reject) => {
-        subject.subareas.forEach((subarea) => {
+        subject.knowledgearea.forEach((knowledgeArea) => {
             db.query(
-                'INSERT INTO IDENTIFIES (subareaid,subjectid) VALUES ($1,$2) ', [subarea['subareaid'], subjectid],
+                'INSERT INTO IDENTIFIES (knowledgeareaid,subjectid) VALUES ($1,$2) ', [knowledgeArea['knowledgeareaid'], subjectid],
             ).then(() => {
                 resolve(response.rows);
             }).catch((response) => {
