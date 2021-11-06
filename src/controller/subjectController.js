@@ -36,16 +36,23 @@ function updateSubject(subject) {
     });
 }
 
-function getSubject(subjectIdParam) {
-    return new Promise((resolve, reject) => {
-        try {
-            const response = subjectRepository.getSubject(subjectIdParam);
-            resolve(response);
-        } catch (e) {
-            reject(e);
-        }
-        resolve();
-    });
+async function getSubject(subjectIdParam) {
+    let knowledgeArea = await subjectRepository.getSubjectKnowledgeArea(subjectIdParam);
+    console.log(knowledgeArea);
+    let response = await subjectRepository.getSubject(subjectIdParam);
+    response[0].knowledgeArea = [knowledgeArea];
+    console.log(response);
+    return response;
+    // return new Promise((resolve, reject) => {
+    //     try {
+    //         let response = subjectRepository.getSubject(subjectIdParam);
+    //         console.log(response);
+    //         resolve(response);
+    //     } catch (e) {
+    //         reject(e);
+    //     }
+    //     resolve();
+    // });
 }
 
 function deleteSubject(subjectId) {
