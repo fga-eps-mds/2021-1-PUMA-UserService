@@ -7,6 +7,7 @@
     "start-dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "unitary-test": "nyc --reporter=cobertura --reporter=text mocha './tests/*/*.test.js' --recursive --reporter mocha-junit-reporter",
+    "debug-test": "mocha './tests/unitaryTests/*.test.js'",
     "test": "mocha './tests/*/*.Integrationtest.js' --recursive"
   },
   "repository": {
