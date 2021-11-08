@@ -7,6 +7,8 @@ const constants = require('../utils/constants');
 const success = constants.success;
 const fail = constants.fail
 
+const { subjectMock } = constants;
+
 describe('addUser', () => {
 
   it('should create a user -> Professor', (done) => {
@@ -241,3 +243,55 @@ describe('checkUser', () => {
   });
 
 });
+
+  it('should get a subjects', (done) => {
+    repository.getSubjects.then((response) =>{
+      assert.equal(typeof (response), 'object');
+      done();
+    });
+  });
+
+  it('should add a subject', (done) => {
+    repository.addSubject(subjectMock).then((response) => {
+      assert.equal(typeof (response), 'number');
+      done();
+    });
+  });
+
+  it('should not add a subject', (done) =>{
+    repository.addSubject({}).then((reponse) =>{
+      done(new Error(response));  
+    }).catch((error) =>{
+      assert.equal(error.severity, 'ERROR');
+      done();
+    });
+  });
+
+  it('should get a knowledge area to subject', (done) =>{
+    repository.getSubjectKnowledgeArea(1).then((response) =>{
+      assert.equal(typeof (response), 'object');
+      done();
+    }).catch(() => {
+      done();
+    });
+  });
+
+  it('should get a subject', (done) => {
+    repository.getSubject(1).then((response) =>{
+      assert.equal(typeof (response), 'object');
+      done();
+    });
+  });
+
+  it('should delete a identifies', (done)=>{
+    repository.deleteIdentifies(1).then((reponse)=>{
+      assert.equal(typeof (response), 'object');
+      done();
+    });
+  });
+
+  it('shoul delete a subject', (done) =>{
+    repository.deleteSubject(1).then((response)=>{
+      assert.equal(typeof (reponse), 'object');
+    });
+  });
