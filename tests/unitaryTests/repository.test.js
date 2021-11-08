@@ -9,7 +9,7 @@ const fail = constants.fail
 
 const { subjectMock } = constants;
 
-describe('addUser', () => {
+describe('src/repository/userRepository.js -> addUser', () => {
 
   it('should create a user -> Professor', (done) => {
     repository.addUser(success.newUserProfessor, success.hash).then((response) => {
@@ -35,7 +35,7 @@ describe('addUser', () => {
 });
 
 
-describe('add user type()', () => {
+describe('src/repository/userRepository.js -> add user type()', () => {
   let id = 0;
   beforeEach((done) => {
     const newUser = {name: `asd${id}`, email: `asd${id}@email.com`}
@@ -106,7 +106,7 @@ describe('add user type()', () => {
 
 });
 
-describe('getUserType -> Professor', () => {
+describe('src/repository/userRepository.js -> getUserType -> Professor', () => {
   let id = 4500;
   before((done) => {
     repository.addUser({name: `erg${id}`, email: `evgb${id}@email.com`}, success.hash).then((response) => {
@@ -125,7 +125,7 @@ describe('getUserType -> Professor', () => {
   });
 });
 
-describe('getUserType -> Student', () => {
+describe('src/repository/userRepository.js -> getUserType -> Student', () => {
   let id = 5500;
   before((done) => {
     repository.addUser({name: `erg${id}`, email: `evgb${id}@email.com`}, success.hash).then((response) => {
@@ -144,7 +144,7 @@ describe('getUserType -> Student', () => {
   });
 });
 
-describe('getUserType -> physicalAgent', () => {
+describe('src/repository/userRepository.js -> getUserType -> physicalAgent', () => {
   let id = 6500;
   before((done) => {
     repository.addUser({name: `erg${id}`, email: `evgb${id}@email.com`}, success.hash).then((response) => {
@@ -163,7 +163,7 @@ describe('getUserType -> physicalAgent', () => {
   });
 });
 
-describe('getUserType -> juridicalAgent', () => {
+describe('src/repository/userRepository.js -> getUserType -> juridicalAgent', () => {
   let id = 7500;
   before((done) => {
     repository.addUser({name: `erg${id}`, email: `evgb${id}@email.com`}, success.hash).then((response) => {
@@ -182,7 +182,7 @@ describe('getUserType -> juridicalAgent', () => {
   });
 });
 
-describe('getUserType -> Failure', () => {
+describe('src/repository/userRepository.js -> getUserType -> Failure', () => {
   let id = 234
   before((done) => {
     repository.addUser({name: `fail${id}`, email: `failure${id}@email.com`}, success.hash).then((response) => {
@@ -209,7 +209,7 @@ describe('getUserType -> Failure', () => {
 
 });
 
-describe('checkUser', () => {
+describe('src/repository/userRepository.js -> checkUser', () => {
   let hash;
 
   before((done) => {
@@ -244,17 +244,33 @@ describe('checkUser', () => {
 
 });
 
+describe('src/repository/userRepository.js -> get subjects', () =>{
   it('should get a subjects', (done) => {
-    repository.getSubjects.then((response) =>{
-      assert.equal(typeof (response), 'object');
+    repository.getSubjects().then((response) =>{
+      assert.equal(typeof (response), 'list');
       done();
+    }).catch((err)=>{
+      done(new Error(err));
     });
   });
 
+  it('should get a subject', (done) => {
+    repository.getSubject(1).then((response) =>{
+      assert.equal(typeof (response), 'list');
+      done();
+    }).catch((err)=>{
+      done(new Error(err));
+    });
+  });
+});
+
+describe('src/repository/userRepository.js -> add subject', () =>{
   it('should add a subject', (done) => {
     repository.addSubject(subjectMock).then((response) => {
       assert.equal(typeof (response), 'number');
       done();
+    }).catch((err)=>{
+      done(new Error(err));
     });
   });
 
@@ -264,34 +280,41 @@ describe('checkUser', () => {
     }).catch((error) =>{
       assert.equal(error.severity, 'ERROR');
       done();
+    }).catch((err)=>{
+      done(new Error(err));
     });
   });
+});
 
+describe('src/repository/userRepository.js -> get knowledge area to subject', ()=>{
   it('should get a knowledge area to subject', (done) =>{
     repository.getSubjectKnowledgeArea(1).then((response) =>{
-      assert.equal(typeof (response), 'object');
+      assert.equal(typeof (response), 'list');
       done();
-    }).catch(() => {
-      done();
+    }).catch((err)=>{
+      done(new Error(err));
     });
   });
+});
 
-  it('should get a subject', (done) => {
-    repository.getSubject(1).then((response) =>{
-      assert.equal(typeof (response), 'object');
-      done();
-    });
-  });
-
+describe('src/repository/userRepository.js -> delete a identifies', ()=>{
   it('should delete a identifies', (done)=>{
     repository.deleteIdentifies(1).then((reponse)=>{
       assert.equal(typeof (response), 'object');
       done();
+    }).catch((err)=>{
+      done(new Error(err));
     });
   });
+});
 
+describe('src/repository/userRepository.js -> delete a subject', ()=>{
   it('shoul delete a subject', (done) =>{
     repository.deleteSubject(1).then((response)=>{
       assert.equal(typeof (reponse), 'object');
+      done();
+    }).catch((err)=>{
+      done(new Error(err));
     });
-  });
+  }); 
+});

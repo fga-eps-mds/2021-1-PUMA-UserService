@@ -7,7 +7,7 @@ const constants = require('../utils/constants');
 const success = constants.success;
 const fail = constants.fail
 
-describe('registerUser', () =>{
+describe('src/controller/userController.js -> registerUser', () =>{
   it('should register a user -> professor', (done) => {
       controller.registerUser({
         ...success.newUserProfessor,
@@ -31,6 +31,8 @@ describe('registerUser', () =>{
       cnpj: 998728
     }).then(() => {
       done();
+    }).catch((err) => {
+      done(new Error(err));
     });
   });
 
@@ -43,6 +45,8 @@ describe('registerUser', () =>{
       cpf: 998728
     }).then(() => {
       done();
+    }).catch((err) => {
+      done(new Error(err));
     });
   });
 
@@ -55,6 +59,8 @@ describe('registerUser', () =>{
       matricula: 998728
     }).then(() => {
       done();
+    }).catch((err) => {
+      done(new Error(err));
     });
   });
 
@@ -95,7 +101,7 @@ describe('registerUser', () =>{
 
 });
 
-describe('checkUserAndGetType', () => {
+describe('src/controller/userController.js ->  checkUserAndGetType', () => {
 
   before((done) => {
     controller.registerUser({
@@ -106,13 +112,17 @@ describe('checkUserAndGetType', () => {
       matricula: 55555
     }).then(()=>{
       done();
-    })
+    }).catch((err) => {
+      done(new Error(err));
+    });
   });
 
   it('should return id and type', (done) => {
     controller.checkUserAndGetType({email: 'checkuser@student.com', password: 'password'}).then((res) => {
       assert.equal(typeof (res), 'object');
       done();
+    }).catch((err) => {
+      done(new Error(err));
     });
   });
 
